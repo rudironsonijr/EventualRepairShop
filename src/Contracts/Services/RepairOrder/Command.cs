@@ -6,6 +6,7 @@ namespace Contracts.Services.RepairOrder
     public class Command
     {
         public record PlaceRepairOrder(
+            Guid RepairOrderId,
             Dto.Customer Customer,
             Dto.Device Device,
             Dto.Scheduling Scheduling,

@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 
-namespace WebAPI.APIs.Schedulings.Validators;
-
-public class RegisterSchedulingValidator : AbstractValidator<Commands.RegisterScheduling>
+namespace WebAPI.APIs.Schedulings.Validators
 {
-    public RegisterSchedulingValidator()
+    public class RegisterSchedulingValidator : AbstractValidator<Commands.RegisterScheduling>
     {
-        RuleFor(scheduling => scheduling.Payload)
-            .SetValidator(new RegisterSchedulingPayloadValidator())
-            .NotEmpty();
+        public RegisterSchedulingValidator()
+        {
+            RuleFor(scheduling => scheduling.Payload)
+                .SetValidator(new RegisterSchedulingPayloadValidator())
+                .NotEmpty();
+        }
     }
 }

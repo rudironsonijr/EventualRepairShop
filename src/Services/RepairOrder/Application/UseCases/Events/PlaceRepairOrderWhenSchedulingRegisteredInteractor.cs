@@ -1,13 +1,13 @@
 using Application.Abstractions;
 using Application.Services;
 using Domain.Aggregates;
-using Scheduling = Contracts.Services.Sheduling;
+using Scheduling = Contracts.Services.Scheduling;
 using Contracts.Services.RepairOrder;
 using Contracts.DataTransferObjects;
 
 namespace Application.UseCases.Events;
 
-public interface IPlaceRepairOrderWhenSchedulingRegisteredInteractor : IInteractor<Scheduling.DomainEvents.SchedulingRegistered> { }
+public interface IPlaceRepairOrderWhenSchedulingRegisteredInteractor : IInteractor<Scheduling.DomainEvent.SchedulingRegistered> { }
 
 public class PlaceRepairOrderWhenSchedulingRegisteredInteractor : IPlaceRepairOrderWhenSchedulingRegisteredInteractor
 {
@@ -18,11 +18,12 @@ public class PlaceRepairOrderWhenSchedulingRegisteredInteractor : IPlaceRepairOr
         _applicationService = applicationService;
     }
 
-    public async Task InteractAsync(Scheduling.DomainEvents.SchedulingRegistered @event, CancellationToken cancellationToken)
+    public async Task InteractAsync(Scheduling.DomainEvent.SchedulingRegistered @event, CancellationToken cancellationToken)
     {
         RepairOrder repairOrder = new();
 
         var command = new Command.PlaceRepairOrder(
+            RepairOrderId: Guid.NewGuid(),
             Customer: @event.Customer,
             Device: @event.Device,
             Scheduling: (Dto.Scheduling)@event.ScheduledDate,

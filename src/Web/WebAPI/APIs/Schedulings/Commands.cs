@@ -1,4 +1,4 @@
-﻿using Contracts.Services.Sheduling;
+﻿using Contracts.Services.Scheduling;
 using MassTransit;
 using WebAPI.Abstractions;
 using WebAPI.APIs.Schedulings.Validators;
@@ -10,6 +10,6 @@ public static class Commands
     public record RegisterScheduling(IBus Bus, Payloads.RegisterSchedulingPayload Payload, CancellationToken CancellationToken)
         : Validatable<RegisterSchedulingValidator>, ICommand<Command.RegisterScheduling>
     {
-        public Command.RegisterScheduling Command => new(Payload.ScheduledDate, Payload.Customer, Payload.Device);
+        public Command.RegisterScheduling Command => new(Guid.NewGuid(), Payload.ScheduledDate, Payload.Customer, Payload.Device, Payload.Description);
     }
 }

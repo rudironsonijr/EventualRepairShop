@@ -2,11 +2,18 @@
 using MassTransit;
 using WebAPI.Abstractions;
 using WebAPI.APIs.RepairOrders.Validators;
+using WebAPI.APIs.Schedulings;
 
 namespace WebAPI.APIs.RepairOrders;
 
 public static class Commands
 {
+    public record PlaceRepairOrder(IBus Bus, Payloads.PlaceRepairOrderPayload Payload, CancellationToken CancellationToken)
+        : Validatable<PlaceRepairOrderValidator>, ICommand<Command.PlaceRepairOrder>
+    {
+        public Command.PlaceRepairOrder Command => new(Guid.NewGuid(), Payload.Customer, Payload.Device, Payload.Scheduling, Payload.Description);
+    }
+
     public record StartRepairOrder(IBus Bus, Guid RepairOrderId, string Notes, CancellationToken CancellationToken)
         : Validatable<StartRepairOrderValidator>, ICommand<Command.StartRepairOrder>
     {

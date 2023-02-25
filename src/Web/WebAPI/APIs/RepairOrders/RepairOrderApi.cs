@@ -11,6 +11,9 @@ public static class RepairOrderApi
     {
         var group = builder.MapGroup(BaseUrl).HasApiVersion(1);
 
+        group.MapPost("/", ([AsParameters] Commands.PlaceRepairOrder placeRepairOrder)
+            => ApplicationApi.SendCommandAsync(placeRepairOrder));
+
         group.MapPut("/{repairOrderId:guid}/start", ([AsParameters] Commands.StartRepairOrder startRepairOrder)
             => ApplicationApi.SendCommandAsync(startRepairOrder));
 

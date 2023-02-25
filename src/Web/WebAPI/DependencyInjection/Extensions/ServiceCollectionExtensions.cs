@@ -52,13 +52,13 @@ public static class ServiceCollectionExtensions
                 bus.ConnectConsumeObserver(new LoggingConsumeObserver());
                 bus.ConnectSendObserver(new LoggingSendObserver());
                 bus.ConfigureEndpoints(context);
-
-                bus.ConfigureSend(pipe => pipe.AddPipeSpecification(
-                    new DelegatePipeSpecification<SendContext<ICommand>>(ctx =>
-                    {
-                        var accessor = context.GetRequiredService<ICorrelationContextAccessor>();
-                        ctx.CorrelationId = new(accessor.CorrelationContext.CorrelationId);
-                    })));
+                
+                //bus.ConfigureSend(pipe => pipe.AddPipeSpecification(
+                //    new DelegatePipeSpecification<SendContext<ICommand>>(ctx =>
+                //    {
+                //        var accessor = context.GetRequiredService<ICorrelationContextAccessor>();
+                //        ctx.CorrelationId = new(accessor.CorrelationContext.CorrelationId);
+                //    })));
             });
         });
 

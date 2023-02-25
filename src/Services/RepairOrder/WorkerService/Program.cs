@@ -51,9 +51,6 @@ builder.ConfigureServices((context, services) =>
     services.ConfigureMessageBusOptions(
         context.Configuration.GetSection(nameof(MessageBusOptions)));
 
-    services.ConfigureQuartzOptions(
-        context.Configuration.GetSection(nameof(QuartzOptions)));
-
     services.ConfigureMassTransitHostOptions(
         context.Configuration.GetSection(nameof(MassTransitHostOptions)));
 });

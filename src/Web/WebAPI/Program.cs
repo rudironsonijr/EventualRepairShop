@@ -49,14 +49,14 @@ builder.Host.ConfigureServices((context, services) =>
                 .AllowAnyHeader()
                 .AllowAnyMethod()));
 
-    services.AddDefaultCorrelationId(options =>
-    {
-        options.RequestHeader =
-            options.ResponseHeader =
-                options.LoggingScopeKey = "CorrelationId";
-        options.UpdateTraceIdentifier = true;
-        options.AddToLoggingScope = true;
-    });
+    //services.AddDefaultCorrelationId(options =>
+    //{
+    //    options.RequestHeader =
+    //        options.ResponseHeader =
+    //            options.LoggingScopeKey = "CorrelationId";
+    //    options.UpdateTraceIdentifier = true;
+    //    options.AddToLoggingScope = true;
+    //});
 
     services
         .AddFluentValidationAutoValidation()
@@ -104,7 +104,7 @@ var app = builder.Build();
 if (builder.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 
-app.UseCorrelationId();
+//app.UseCorrelationId();
 app.UseCors();
 app.UseSerilogRequestLogging();
 

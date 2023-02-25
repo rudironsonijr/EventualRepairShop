@@ -30,9 +30,6 @@ public class EventStoreGateway : IEventStoreGateway
     {
         var events = await _repository.GetStreamAsync(aggregateId, null, cancellationToken);
 
-        if (events is { Count: 0 })
-            throw new AggregateNotFoundException(aggregateId, typeof(TAggregate));
-
         var aggregate = new TAggregate();
         aggregate.LoadFromHistory(events);
 
