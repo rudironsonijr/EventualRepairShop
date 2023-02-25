@@ -1,3 +1,4 @@
-﻿namespace Contratos.Abstrações.Mensagens;
-
-public interface ICommand : IMessage { }
+﻿namespace Contracts.Abstractions.Messages
+{
+    public interface ICommand : IMessage { }
+}

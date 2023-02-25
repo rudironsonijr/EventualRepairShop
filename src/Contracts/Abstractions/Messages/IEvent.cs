@@ -1,10 +1,16 @@
-﻿namespace Contratos.Abstrações.Mensagens;
+﻿using MassTransit;
 
-public interface IEvent : IMessage { }
-
-public interface IVersionedEvent : IEvent
+namespace Contracts.Abstractions.Messages
 {
-    long Version { get; }
-}
+    [ExcludeFromTopology]
+    public interface IEvent : IMessage { }
 
-public interface IDomainEvent : IVersionedEvent { }
+    [ExcludeFromTopology]
+    public interface IVersionedEvent : IEvent
+    {
+        long Version { get; }
+    }
+
+    [ExcludeFromTopology]
+    public interface IDomainEvent : IVersionedEvent { }
+}

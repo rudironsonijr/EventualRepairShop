@@ -1,0 +1,11 @@
+version: 3.9
+
+services:
+  
+
+  
+
+networks:
+  internal:
+    name: internal
+    driver: bridge
