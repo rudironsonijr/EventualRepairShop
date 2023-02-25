@@ -34,7 +34,7 @@ namespace Domain.Abstractions.Aggregates
             _events.Add(@event);
         }
 
-        protected abstract void Apply(IDomainEvent @evento);
+        protected abstract void Apply(IDomainEvent @event);
 
     }
 }

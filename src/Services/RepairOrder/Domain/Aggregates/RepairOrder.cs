@@ -9,8 +9,6 @@ namespace Domain.Aggregates
 {
     public class RepairOrder : AggregateRoot
     {
-        private readonly List<RepairOrderItem> _items = new();
-
         public Customer Customer { get; private set; }
         
         public Device Device { get; private set; }
@@ -25,6 +23,8 @@ namespace Domain.Aggregates
 
         public IEnumerable<RepairOrderItem> Parts
             => _items.AsReadOnly();
+
+        private readonly List<RepairOrderItem> _items = new();
 
         public override void Handle(ICommand command)
             => Handle(command as dynamic);
