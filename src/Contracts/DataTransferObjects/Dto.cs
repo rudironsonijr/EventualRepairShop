@@ -8,6 +8,10 @@
 
         public record Part(string Name, string Brand);
 
-        public record Scheduling(DateTime ScheduledStart);
+        public record Scheduling(DateTime ScheduledStart)
+        {
+            public static implicit operator Scheduling(DateTime scheduledStart)
+                => new(scheduledStart);
+        }
     }
 }

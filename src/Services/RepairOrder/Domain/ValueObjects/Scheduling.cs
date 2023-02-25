@@ -6,5 +6,8 @@ namespace Domain.ValueObjects
     {
         public static implicit operator Scheduling(Dto.Scheduling scheduling)
             => new(scheduling.ScheduledStart);
+
+        public static implicit operator Scheduling(DateTime scheduledStart)
+            => new(scheduledStart);
     }
 }
