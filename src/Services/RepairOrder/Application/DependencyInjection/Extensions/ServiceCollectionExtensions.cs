@@ -15,6 +15,5 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddEventInteractors(this IServiceCollection services)
         => services
-            .AddScoped<IPlaceOrderWhenCartSubmittedInteractor, PlaceRepairOrderWhenSchedulingRegisteredInteractor>()
-            .AddScoped<IConfirmOrderWhenPaymentCompletedInteractor, ConfirmOrderWhenPaymentCompletedInteractor>();
+            .AddScoped<IPlaceRepairOrderWhenSchedulingRegisteredInteractor, PlaceRepairOrderWhenSchedulingRegisteredInteractor>();
 }

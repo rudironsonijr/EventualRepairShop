@@ -1,25 +1,139 @@
+using System.Reflection;
+using System.Text.Json.Serialization;
+using Contracts.JsonConverters;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MassTransit;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.HttpLogging;
+using Serilog;
+using WebAPI.APIs.RepairOrders;
+using WebAPI.APIs.Schedulings;
+using WebAPI.DependencyInjection.Extensions;
+using WebAPI.DependencyInjection.Options;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Host.UseDefaultServiceProvider((context, provider) =>
+{
+    provider.ValidateScopes =
+        provider.ValidateOnBuild =
+            context.HostingEnvironment.IsDevelopment();
+});
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Configuration
+    .AddUserSecrets(Assembly.GetExecutingAssembly())
+    .AddEnvironmentVariables();
+
+Log.Logger = new LoggerConfiguration().ReadFrom
+    .Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Logging
+    .ClearProviders()
+    .AddSerilog();
+
+builder.Host.UseSerilog();
+
+builder.Host.ConfigureServices((context, services) =>
+{
+    services.AddProblemDetails();
+
+    services.AddCors(options
+        => options.AddDefaultPolicy(policyBuilder
+            => policyBuilder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod()));
+
+    services.AddDefaultCorrelationId(options =>
+    {
+        options.RequestHeader =
+            options.ResponseHeader =
+                options.LoggingScopeKey = "CorrelationId";
+        options.UpdateTraceIdentifier = true;
+        options.AddToLoggingScope = true;
+    });
+
+    services
+        .AddFluentValidationAutoValidation()
+        .AddFluentValidationClientsideAdapters()
+        .AddValidatorsFromAssemblyContaining<Program>();
+
+    // TODO - Review it!
+    builder.Services.Configure<JsonOptions>(options =>
+    {
+        options.SerializerOptions.Converters.Add(new DateOnlyTextJsonConverter());
+        options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
+    services
+        .AddSwaggerGenNewtonsoftSupport()
+        .AddFluentValidationRulesToSwagger()
+        .AddEndpointsApiExplorer()
+        .AddSwagger();
+
+    services
+        .AddApiVersioning(options => options.ReportApiVersions = true)
+        .AddApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'VVV";
+            options.SubstituteApiVersionInUrl = true;
+        });
+
+    services.AddMessageBus();
+
+    services.ConfigureMessageBusOptions(
+        context.Configuration.GetSection(nameof(MessageBusOptions)));
+
+    services.ConfigureMassTransitHostOptions(
+        context.Configuration.GetSection(nameof(MassTransitHostOptions)));
+
+    services.ConfigureRabbitMqTransportOptions(
+        context.Configuration.GetSection(nameof(RabbitMqTransportOptions)));
+
+    services.AddHttpLogging(options
+        => options.LoggingFields = HttpLoggingFields.All);
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (builder.Environment.IsDevelopment())
+    app.UseDeveloperExceptionPage();
+
+app.UseCorrelationId();
+app.UseCors();
+app.UseSerilogRequestLogging();
+
+app.NewVersionedApi("RepairOrders").MapRepairOrderApiV1();
+app.NewVersionedApi("Schedulings").MapSchedulingApiV1();
+
+
+if (builder.Environment.IsDevelopment() ||
+    builder.Environment.IsStaging())
+    app.ConfigureSwagger();
+
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    await app.RunAsync();
+    Log.Information("Stopped cleanly");
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "An unhandled exception occured during bootstrapping");
+    await app.StopAsync();
+}
+finally
+{
+    Log.CloseAndFlush();
+    await app.DisposeAsync();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+// TODO - Review it! Integration tests need it, at this time.
+namespace WebAPI
+{
+    public partial class Program { }
+}

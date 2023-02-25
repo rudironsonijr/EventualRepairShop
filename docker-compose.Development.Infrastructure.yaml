@@ -5,14 +5,15 @@ services:
     container_name: mssql
     image: mcr.microsoft.com/mssql/server
     ports:
-      - "1433"
+      - "1433:1433"
+      - "1434:1434/udp"
     environment:
       SA_PASSWORD: "!MyStrongPassword"
       ACCEPT_EULA: "Y"
 
   rabbitmq:
     container_name: rabbitmq
-    image: rabbit:3-management-alpine
+    image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -20,8 +21,3 @@ services:
       RABBITMQ_DEFAULT_USER: "guest"
       RABBITMQ_DEFAULT_PASS: "guest"
       RABBITMQ_DEFAULT_VHOST: "repairshop"
-
-networks:
-  internal:
-    name: internal
-    driver: bridge
