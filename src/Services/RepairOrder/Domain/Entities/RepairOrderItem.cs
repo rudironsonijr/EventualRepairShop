@@ -11,7 +11,7 @@ namespace Domain.Entities
 
         public RepairOrderItem(Guid id, Part part, int quantity)
         {
-            id = id;
+            Id = id;
             Part = part;
             Quantity = quantity;
         }
