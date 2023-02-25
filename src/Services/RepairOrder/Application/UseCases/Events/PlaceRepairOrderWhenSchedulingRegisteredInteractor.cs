@@ -5,32 +5,33 @@ using Scheduling = Contracts.Services.Scheduling;
 using Contracts.Services.RepairOrder;
 using Contracts.DataTransferObjects;
 
-namespace Application.UseCases.Events;
-
-public interface IPlaceRepairOrderWhenSchedulingRegisteredInteractor : IInteractor<Scheduling.DomainEvent.SchedulingRegistered> { }
-
-public class PlaceRepairOrderWhenSchedulingRegisteredInteractor : IPlaceRepairOrderWhenSchedulingRegisteredInteractor
+namespace Application.UseCases.Events
 {
-    private readonly IApplicationService _applicationService;
+    public interface IPlaceRepairOrderWhenSchedulingRegisteredInteractor : IInteractor<Scheduling.DomainEvent.SchedulingRegistered> { }
 
-    public PlaceRepairOrderWhenSchedulingRegisteredInteractor(IApplicationService applicationService)
+    public class PlaceRepairOrderWhenSchedulingRegisteredInteractor : IPlaceRepairOrderWhenSchedulingRegisteredInteractor
     {
-        _applicationService = applicationService;
-    }
+        private readonly IApplicationService _applicationService;
 
-    public async Task InteractAsync(Scheduling.DomainEvent.SchedulingRegistered @event, CancellationToken cancellationToken)
-    {
-        RepairOrder repairOrder = new();
+        public PlaceRepairOrderWhenSchedulingRegisteredInteractor(IApplicationService applicationService)
+        {
+            _applicationService = applicationService;
+        }
 
-        var command = new Command.PlaceRepairOrder(
-            RepairOrderId: Guid.NewGuid(),
-            Customer: @event.Customer,
-            Device: @event.Device,
-            Scheduling: (Dto.Scheduling)@event.ScheduledDate,
-            Description: @event.Description);
+        public async Task InteractAsync(Scheduling.DomainEvent.SchedulingRegistered @event, CancellationToken cancellationToken)
+        {
+            RepairOrder repairOrder = new();
 
-        repairOrder.Handle(command);
+            var command = new Command.PlaceRepairOrder(
+                RepairOrderId: Guid.NewGuid(),
+                Customer: @event.Customer,
+                Device: @event.Device,
+                Scheduling: (Dto.Scheduling)@event.ScheduledDate,
+                Description: @event.Description);
 
-        await _applicationService.AppendEventsAsync(repairOrder, cancellationToken);
+            repairOrder.Handle(command);
+
+            await _applicationService.AppendEventsAsync(repairOrder, cancellationToken);
+        }
     }
 }
